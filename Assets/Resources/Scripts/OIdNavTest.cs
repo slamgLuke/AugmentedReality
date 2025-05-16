@@ -5,7 +5,7 @@ using Niantic.Lightship.AR.NavigationMesh;
 /// LightshipNavMeshSample
 /// 
 /// El BoxCollider seguirá la posición del agente cada frame.
-public class NavMeshHowTo : MonoBehaviour
+public class TEST : MonoBehaviour
 {
     [SerializeField]
     private Camera _camera;
@@ -20,19 +20,18 @@ public class NavMeshHowTo : MonoBehaviour
     [SerializeField, Range(0.1f, 20f)]
     private float followSpeed = 5f; // Velocidad de seguimiento del objeto físico (ajustable desde el editor).
 
-    private float pushForce = 5f;
+
+    private float pushForce = 5f; 
 
     private LightshipNavMeshAgent _agentInstance;
     private GameObject _playerInstance;
     private Rigidbody _playerRigidbody;
 
-    private bool isRagdoll = false;
-
     void Update()
     {
         HandleTouch();
 
-        if (_playerInstance != null && _playerInstance.transform.position.y <= -5f)
+        if (_playerInstance.transform.position.y <= -5f)
         {
             // Destruir ambos objetos y nulificar referencias
             Destroy(_playerInstance);
@@ -44,15 +43,12 @@ public class NavMeshHowTo : MonoBehaviour
 
             Debug.Log("Player y Agent destruidos por caer debajo de -5 en Y.");
         }
+
     }
 
     void FixedUpdate()
     {
-        if (!isRagdoll)
-        {
-            MovePlayer();
-            RotatePlayer();
-        }
+        MovePlayer();
     }
 
     private void HandleTouch()
@@ -91,23 +87,20 @@ public class NavMeshHowTo : MonoBehaviour
                 }
                 else
                 {
+
                     if (hit.collider.gameObject == _playerInstance)
                     {
-                        // Aplicar fuerza al player (modo ragdoll)
+                        // Dirección de la cámara (hacia adelante)
                         Vector3 forceDirection = _camera.transform.forward;
-                        forceDirection.y = 0;
+                        forceDirection.y = 0; // Mantener la fuerza en el plano horizontal
 
-                        float forceMagnitude = _playerRigidbody.mass * pushForce;
+                        // Magnitud proporcional a la masa del Rigidbody del player
+                        float forceMagnitude = _playerRigidbody.mass * pushForce; // Ajusta el factor multiplicador según la fuerza deseada
                         _playerRigidbody.AddForce(forceDirection.normalized * forceMagnitude, ForceMode.Impulse);
-
-                        isRagdoll = true; // Activa el modo ragdoll
                         Debug.Log("Fuerza aplicada al Player en dirección de la cámara.");
                     }
-                    else
-                    {
-                        _agentInstance.transform.position = hit.point;
-                        isRagdoll = false; // Sale del modo ragdoll
-                    }
+
+                    _agentInstance.SetDestination(hit.point);
                 }
             }
         }
@@ -117,12 +110,13 @@ public class NavMeshHowTo : MonoBehaviour
     {
         if (_playerInstance == null || _agentInstance == null) return;
 
+        // Asegurarse que el Rigidbody esté asignado
         if (_playerRigidbody == null)
             _playerRigidbody = _playerInstance.GetComponent<Rigidbody>();
 
         // Calcular la dirección hacia el agente sin cambiar la altura (Y)
         Vector3 direction = _agentInstance.transform.position - _playerInstance.transform.position;
-        direction.y = 0;
+        direction.y = 0; // Remover componente vertical
         direction = direction.normalized;
 
         float distance = Vector3.Distance(
@@ -133,26 +127,8 @@ public class NavMeshHowTo : MonoBehaviour
         // Solo moverse si está lo suficientemente lejos
         if (distance > 0.1f)
         {
+            // Movimiento del objeto físico siguiendo al agente (solo en XZ)
             _playerRigidbody.MovePosition(_playerInstance.transform.position + direction * followSpeed * Time.fixedDeltaTime);
-        }
-    }
-
-    private void RotatePlayer()
-    {
-        if (_playerInstance == null || _agentInstance == null) return;
-
-        // Rotar suavemente al player hacia el agente
-        Vector3 direction = _agentInstance.transform.position - _playerInstance.transform.position;
-        direction.y = 0; // Mantener solo en plano XZ
-
-        if (direction.magnitude > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            _playerInstance.transform.rotation = Quaternion.Slerp(
-                _playerInstance.transform.rotation, 
-                targetRotation, 
-                followSpeed * Time.fixedDeltaTime
-            );
         }
     }
 }
