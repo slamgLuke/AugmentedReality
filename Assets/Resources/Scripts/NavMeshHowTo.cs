@@ -16,6 +16,9 @@ public class NavMeshHowTo : MonoBehaviour
     [SerializeField]
     private GameObject _playerPrefab;
 
+    [SerializeField]
+    private Transform spawnablesTransform;
+
     [Header("Player Settings")]
     [SerializeField, Range(0.1f, 20f)]
     private float followSpeed = 5f; // Velocidad de seguimiento del objeto físico (ajustable desde el editor).
@@ -25,6 +28,7 @@ public class NavMeshHowTo : MonoBehaviour
     private LightshipNavMeshAgent _agentInstance;
     private GameObject _playerInstance;
     private Rigidbody _playerRigidbody;
+
 
     private bool isRagdoll = false;
 
@@ -57,6 +61,15 @@ public class NavMeshHowTo : MonoBehaviour
 
     private void HandleTouch()
     {
+        if (UIManager.IsUIActive)
+        {
+            return;
+        }
+        if (UIManager.CurrentMode != UIManager.InteractionMode.Touch)
+        {
+            return;
+        }
+
 #if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
 #else
@@ -77,10 +90,10 @@ public class NavMeshHowTo : MonoBehaviour
                 Debug.Log("HIT!!");
                 if (_agentInstance == null)
                 {
-                    _agentInstance = Instantiate(_agentPrefab);
+                    _agentInstance = Instantiate(_agentPrefab, spawnablesTransform.position, Quaternion.identity, spawnablesTransform);
                     _agentInstance.transform.position = hit.point;
 
-                    _playerInstance = Instantiate(_playerPrefab);
+                    _playerInstance = Instantiate(_playerPrefab, spawnablesTransform.position, Quaternion.identity, spawnablesTransform);
                     _playerInstance.transform.position = hit.point + new Vector3(0, 0.05f, 0);
                     _playerRigidbody = _playerInstance.GetComponent<Rigidbody>();
 
@@ -149,8 +162,8 @@ public class NavMeshHowTo : MonoBehaviour
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             _playerInstance.transform.rotation = Quaternion.Slerp(
-                _playerInstance.transform.rotation, 
-                targetRotation, 
+                _playerInstance.transform.rotation,
+                targetRotation,
                 followSpeed * Time.fixedDeltaTime
             );
         }

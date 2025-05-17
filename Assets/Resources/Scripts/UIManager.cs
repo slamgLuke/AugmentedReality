@@ -24,7 +24,6 @@ public class UIManager : MonoBehaviour
     public GameObject sideMenuPanel;
     public Button hamburgerButton;
     public RectTransform sideMenuRectTransform;
-    public GameObject backgroundCatcherPanel; // Assign the transparent full-screen panel
 
     [Header("Mode Controls")]
     public Button resetButton;
@@ -41,6 +40,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI popupMessageText;
     public Button confirmYesButton;
     public Button confirmNoButton;
+    public Transform spawnablesTransform;
 
     [Header("Side Menu Animation")]
     public float animationDuration = 0.3f;
@@ -60,7 +60,6 @@ public class UIManager : MonoBehaviour
         else Debug.LogError("SideMenuRectTransform not assigned!");
 
         if (confirmationPopupPanel) confirmationPopupPanel.SetActive(false);
-        if (backgroundCatcherPanel) backgroundCatcherPanel.SetActive(false);
 
         // Assign button listeners
         if (hamburgerButton) hamburgerButton.onClick.AddListener(ToggleSideMenu);
@@ -71,17 +70,6 @@ public class UIManager : MonoBehaviour
 
         if (confirmYesButton) confirmYesButton.onClick.AddListener(HandleConfirmYes);
         if (confirmNoButton) confirmNoButton.onClick.AddListener(HandleConfirmNo);
-
-        // Listener for the background catcher (to close side menu)
-        Button bgCatcherButton = backgroundCatcherPanel?.GetComponent<Button>();
-        if (bgCatcherButton)
-        {
-            bgCatcherButton.onClick.AddListener(CloseSideMenuFromBackground);
-        }
-        else if (backgroundCatcherPanel)
-        {
-            Debug.LogWarning("BackgroundCatcherPanel does not have a Button component for click detection.");
-        }
 
 
         // Initialize Mode and UI
@@ -107,11 +95,6 @@ public class UIManager : MonoBehaviour
             StopCoroutine(menuAnimationCoroutine);
         }
         menuAnimationCoroutine = StartCoroutine(AnimateSideMenu(isSideMenuOpen));
-
-        if (backgroundCatcherPanel)
-        {
-            backgroundCatcherPanel.SetActive(isSideMenuOpen); // Activate catcher when menu is open
-        }
     }
 
     IEnumerator AnimateSideMenu(bool open)
@@ -207,25 +190,29 @@ public class UIManager : MonoBehaviour
             if (menuAnimationCoroutine != null) StopCoroutine(menuAnimationCoroutine);
             menuAnimationCoroutine = StartCoroutine(AnimateSideMenu(false)); // Animate to closed
             isSideMenuOpen = false; // Set the state to closed
-            if (backgroundCatcherPanel) backgroundCatcherPanel.SetActive(false);
             // IsUIActive will be re-evaluated by AnimateSideMenu completion or by HandleConfirmYes/No
         }
     }
 
     void HandleConfirmYes()
     {
-        Debug.Log("Reset Confirmed!");
-        OnResetSceneConfirmed?.Invoke();
+        // delete all children
+        if (spawnablesTransform != null)
+        {
+            foreach (Transform child in spawnablesTransform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        OnResetSceneConfirmed?.Invoke(); // For other reset logic like scene reload or player reset
         if (confirmationPopupPanel) confirmationPopupPanel.SetActive(false);
-        // Side menu should already be closed or in the process of closing if HandleResetButton was called
-        // isSideMenuOpen should be false here if HandleResetButton closed it.
         UpdateIsUIActive();
     }
 
     void HandleConfirmNo()
     {
         if (confirmationPopupPanel) confirmationPopupPanel.SetActive(false);
-        // Side menu state (isSideMenuOpen) remains as it was before popup.
         UpdateIsUIActive();
     }
 }
