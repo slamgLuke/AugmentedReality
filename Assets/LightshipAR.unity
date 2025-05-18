@@ -1652,14 +1652,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 771585378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 633591c34834930469288be85f2adc9a, type: 3}
+  m_Script: {fileID: 11500000, guid: cf9284a3e4886db46be5a1e36fb27a91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _camera: {fileID: 2026431400}
   _agentPrefab: {fileID: -936137546814357263, guid: 8924f67e08575aa40af744fedc2c3ab1, type: 3}
   _playerPrefab: {fileID: 8323350124874897315, guid: 03d7640840f5b8a4aafc056e69fd7965, type: 3}
   spawnablesTransform: {fileID: 1522341059}
-  followSpeed: 1
+  followSpeed: 5
 --- !u!1 &774941813
 GameObject:
   m_ObjectHideFlags: 0
