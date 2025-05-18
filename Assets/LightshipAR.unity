@@ -1659,7 +1659,7 @@ MonoBehaviour:
   _agentPrefab: {fileID: -936137546814357263, guid: 8924f67e08575aa40af744fedc2c3ab1, type: 3}
   _playerPrefab: {fileID: 8323350124874897315, guid: 03d7640840f5b8a4aafc056e69fd7965, type: 3}
   spawnablesTransform: {fileID: 1522341059}
-  followSpeed: 5
+  followSpeed: 1
 --- !u!1 &774941813
 GameObject:
   m_ObjectHideFlags: 0
