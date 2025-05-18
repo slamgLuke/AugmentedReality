@@ -63,8 +63,13 @@ public class ObjectSpawner : MonoBehaviour
 
             // Instantiate and set parent
             Rigidbody thing = Instantiate(selectedPrefab, pos + (forw * forwardDistanceFactor), Quaternion.identity, spawnablesTransform);
-
-            if (thing != null)
+            MeshCollider meshCollider = thing.GetComponent<MeshCollider>();
+            if (meshCollider != null)
+            {
+                meshCollider.convex = true;
+            }
+            
+             if (thing != null)
             {
                 thing.AddForce(forw * strength);
             }
