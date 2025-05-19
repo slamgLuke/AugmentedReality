@@ -101,8 +101,8 @@ public class NavMeshHowTo : MonoBehaviour
 
         if (inputBegan)
         {
-            // Check if the touch/click is in the top 10% of the screen
-            if (screenPosition.y > Screen.height * 0.9f)
+            // Check if the touch/click is in the top 17% of the screen
+            if (screenPosition.y > Screen.height * 0.83f)
             {
                 // Debug.Log("Touch in top 10% of screen, ignoring for agent movement.");
                 return; // Ignore touches in the top 10% of the screen
