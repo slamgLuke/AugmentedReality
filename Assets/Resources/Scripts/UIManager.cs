@@ -7,8 +7,8 @@ public class UIManager : MonoBehaviour
 {
     public enum InteractionMode
     {
-        Touch, // For interacting with existing objects
-        Spawn  // For spawning new objects
+        Touch,
+        Spawn
     }
 
     // --- Global Static Properties ---
@@ -18,7 +18,6 @@ public class UIManager : MonoBehaviour
     // --- Events ---
     public static event System.Action<InteractionMode> OnModeChanged;
     public static event System.Action OnResetSceneConfirmed;
-    // No longer need OnInteractModeToggled or OnSpawnModeToggled, use OnModeChanged
 
     [Header("Menu Elements")]
     public GameObject sideMenuPanel;
@@ -33,7 +32,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Mode Button Visuals")]
     public Color normalButtonColor = Color.white;
-    public Color highlightedButtonColor = Color.yellow; // Example color
+    public Color highlightedButtonColor = Color.yellow;
 
     [Header("Confirmation Popup")]
     public GameObject confirmationPopupPanel;
@@ -51,7 +50,7 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         // Initial states
-        if (sideMenuPanel) sideMenuPanel.SetActive(true); // Keep active for animation
+        if (sideMenuPanel) sideMenuPanel.SetActive(true);
         if (sideMenuRectTransform)
         {
             sideMenuWidth = sideMenuRectTransform.rect.width;
@@ -73,7 +72,7 @@ public class UIManager : MonoBehaviour
 
 
         // Initialize Mode and UI
-        ApplyModeChange(CurrentMode, false); // Apply initial mode without closing menu
+        ApplyModeChange(CurrentMode, false);
         UpdateIsUIActive();
     }
 
@@ -88,7 +87,7 @@ public class UIManager : MonoBehaviour
     void ToggleSideMenu()
     {
         isSideMenuOpen = !isSideMenuOpen;
-        UpdateIsUIActive(); // Update global state
+        UpdateIsUIActive();
 
         if (menuAnimationCoroutine != null)
         {
@@ -111,7 +110,6 @@ public class UIManager : MonoBehaviour
             yield return null;
         }
         sideMenuRectTransform.anchoredPosition = new Vector2(targetX, sideMenuRectTransform.anchoredPosition.y);
-        // Ensure IsUIActive is correct after animation, especially if closed via background
         UpdateIsUIActive();
     }
 
@@ -119,7 +117,7 @@ public class UIManager : MonoBehaviour
     {
         if (isSideMenuOpen)
         {
-            ToggleSideMenu(); // This will handle animation and IsUIActive update
+            ToggleSideMenu();
         }
     }
 
@@ -135,9 +133,9 @@ public class UIManager : MonoBehaviour
 
     private void ApplyModeChange(InteractionMode newMode, bool closeMenuAfterChange = true)
     {
-        if (CurrentMode == newMode && !closeMenuAfterChange) // If called from start, don't do much if same
+        if (CurrentMode == newMode && !closeMenuAfterChange)
         {
-            UpdateModeVisuals(); // Ensure visuals are correct on start
+            UpdateModeVisuals();
             return;
         }
 
@@ -146,7 +144,7 @@ public class UIManager : MonoBehaviour
 
         UpdateModeVisuals();
 
-        OnModeChanged?.Invoke(CurrentMode); // Notify other systems
+        OnModeChanged?.Invoke(CurrentMode);
 
         if (closeMenuAfterChange && isSideMenuOpen)
         {
@@ -156,13 +154,11 @@ public class UIManager : MonoBehaviour
 
     private void UpdateModeVisuals()
     {
-        // Update State Visualizer Text
         if (stateVisualizerText != null)
         {
             stateVisualizerText.text = CurrentMode == InteractionMode.Spawn ? "Spawn Objects Mode" : "Touch Mode";
         }
 
-        // Update Button Highlights
         Image touchBtnImage = touchModeButton?.GetComponent<Image>();
         if (touchBtnImage)
         {
@@ -180,9 +176,8 @@ public class UIManager : MonoBehaviour
     {
         if (popupMessageText) popupMessageText.text = "Are you sure you want to reset the scene?";
         if (confirmationPopupPanel) confirmationPopupPanel.SetActive(true);
-        UpdateIsUIActive(); // UI is active due to popup
+        UpdateIsUIActive();
 
-        // Optionally close side menu immediately
         if (isSideMenuOpen)
         {
             // Don't call ToggleSideMenu as it flips isSideMenuOpen.

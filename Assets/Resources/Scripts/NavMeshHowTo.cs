@@ -1,5 +1,4 @@
 using UnityEngine;
-using Niantic.Lightship.AR.NavigationMesh;
 
 /// SUMMARY:
 /// LightshipNavMeshSample
@@ -44,7 +43,10 @@ public class NavMeshHowTo : MonoBehaviour
         {
             // Destruir ambos objetos y nulificar referencias
             Destroy(_playerInstance);
-            Destroy(_agentInstance.gameObject);
+            if (_agentInstance != null) // Check if agentInstance still exists
+            {
+                Destroy(_agentInstance.gameObject);
+            }
 
             _playerInstance = null;
             _agentInstance = null;
@@ -76,20 +78,37 @@ public class NavMeshHowTo : MonoBehaviour
             return;
         }
 
+        Vector2 screenPosition = Vector2.zero;
+        bool inputBegan = false;
+
 #if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
-#else
-        if (Input.touchCount <= 0) return;
-
-        var touch = Input.GetTouch(0);
-        if (touch.phase == UnityEngine.TouchPhase.Began)
-#endif
         {
-#if UNITY_EDITOR
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            screenPosition = Input.mousePosition;
+            inputBegan = true;
+        }
 #else
-            Ray ray = _camera.ScreenPointToRay(touch.position);
+        if (Input.touchCount > 0)
+        {
+            var touch = Input.GetTouch(0);
+            if (touch.phase == UnityEngine.TouchPhase.Began)
+            {
+                screenPosition = touch.position;
+                inputBegan = true;
+            }
+        }
 #endif
+
+        if (inputBegan)
+        {
+            // Check if the touch/click is in the top 10% of the screen
+            if (screenPosition.y > Screen.height * 0.9f)
+            {
+                // Debug.Log("Touch in top 10% of screen, ignoring for agent movement.");
+                return; // Ignore touches in the top 10% of the screen
+            }
+
+            Ray ray = _camera.ScreenPointToRay(screenPosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
