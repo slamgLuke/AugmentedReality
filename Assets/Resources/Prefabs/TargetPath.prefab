@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 9018008785511503351}
   - component: {fileID: 8678738616981404642}
   - component: {fileID: -1255406152110600583}
-  - component: {fileID: -936137546814357263}
   m_Layer: 0
   m_Name: TargetPath
   m_TagString: Untagged
@@ -30,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -109,19 +108,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-936137546814357263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8323350124874897315}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa9c6c34ba7214d98a185db26b656d1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkingSpeed: 3
-  jumpDistance: 1
-  jumpPenalty: 2
-  pathFindingBehaviour: 2

@@ -1598,7 +1598,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 771585378}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23b074ffe53f349158f83a6df3594ccd, type: 3}
   m_Name: 
@@ -1612,7 +1612,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 771585378}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e75a4f955e64146d499d20087e3d038c, type: 3}
   m_Name: 
@@ -1656,10 +1656,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _camera: {fileID: 2026431400}
-  _agentPrefab: {fileID: -936137546814357263, guid: 8924f67e08575aa40af744fedc2c3ab1, type: 3}
+  _agentPrefab: {fileID: 8323350124874897315, guid: 8924f67e08575aa40af744fedc2c3ab1, type: 3}
   _playerPrefab: {fileID: 8323350124874897315, guid: 03d7640840f5b8a4aafc056e69fd7965, type: 3}
   spawnablesTransform: {fileID: 1522341059}
   followSpeed: 1
+  rotationSpeed: 10
 --- !u!1 &774941813
 GameObject:
   m_ObjectHideFlags: 0

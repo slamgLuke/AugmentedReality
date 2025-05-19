@@ -11,7 +11,7 @@ public class NavMeshHowTo : MonoBehaviour
     private Camera _camera;
 
     [SerializeField]
-    private LightshipNavMeshAgent _agentPrefab;
+    private GameObject _agentPrefab;
 
     [SerializeField]
     private GameObject _playerPrefab;
@@ -21,13 +21,17 @@ public class NavMeshHowTo : MonoBehaviour
 
     [Header("Player Settings")]
     [SerializeField, Range(0.1f, 20f)]
-    private float followSpeed = 5f; // Velocidad de seguimiento del objeto físico (ajustable desde el editor).
+    private float followSpeed = 5f; // Velocidad de seguimiento del objeto físico.
+
+    [SerializeField, Range(10f, 500f)]
+    private float rotationSpeed = 100f; // Velocidad de rotación ajustable.
 
     private float pushForce = 5f;
 
-    private LightshipNavMeshAgent _agentInstance;
+    private GameObject _agentInstance;
     private GameObject _playerInstance;
     private Rigidbody _playerRigidbody;
+    private Transform modelTransform; // Asigna aquí el transform del modelo hijo.
 
 
     private bool isRagdoll = false;
@@ -45,6 +49,7 @@ public class NavMeshHowTo : MonoBehaviour
             _playerInstance = null;
             _agentInstance = null;
             _playerRigidbody = null;
+            modelTransform = null;
 
             Debug.Log("Player y Agent destruidos por caer debajo de -5 en Y.");
         }
@@ -56,6 +61,7 @@ public class NavMeshHowTo : MonoBehaviour
         {
             MovePlayer();
             RotatePlayer();
+            TiltPlayerModel();
         }
     }
 
@@ -94,8 +100,11 @@ public class NavMeshHowTo : MonoBehaviour
                     _agentInstance.transform.position = hit.point;
 
                     _playerInstance = Instantiate(_playerPrefab, spawnablesTransform.position, Quaternion.identity, spawnablesTransform);
-                    _playerInstance.transform.position = hit.point + new Vector3(0, 0.05f, 0);
+                    _playerInstance.transform.position = hit.point + new Vector3(0, 0.1f, 0);
                     _playerRigidbody = _playerInstance.GetComponent<Rigidbody>();
+
+                    modelTransform = _playerInstance.transform.GetChild(0); // Obtiene el primer hijo
+
 
                     if (_playerRigidbody == null)
                     {
@@ -164,8 +173,26 @@ public class NavMeshHowTo : MonoBehaviour
             _playerInstance.transform.rotation = Quaternion.Slerp(
                 _playerInstance.transform.rotation,
                 targetRotation,
-                followSpeed * Time.fixedDeltaTime
+                rotationSpeed * Time.fixedDeltaTime
             );
         }
+    }
+
+
+    private void TiltPlayerModel()
+    {
+        if (_playerInstance == null || modelTransform == null) return;
+
+        float speed = _playerRigidbody.linearVelocity.magnitude;
+
+        // Ajustar el ángulo proporcionalmente a la velocidad, con un límite máximo
+        float maxTiltAngle = 90f; // Máximo ángulo de inclinación permitido
+        float targetTilt = Mathf.Clamp(-speed * 2f, -maxTiltAngle, maxTiltAngle);
+
+        modelTransform.localRotation = Quaternion.Slerp(
+            modelTransform.localRotation,
+            Quaternion.Euler(targetTilt, 0, 0),
+            Time.fixedDeltaTime * 5f
+        );
     }
 }
