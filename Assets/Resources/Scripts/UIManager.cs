@@ -8,7 +8,8 @@ public class UIManager : MonoBehaviour
     public enum InteractionMode
     {
         Touch,
-        Spawn
+        Spawn,
+        Chase
     }
 
     // --- Global Static Properties ---
@@ -28,6 +29,7 @@ public class UIManager : MonoBehaviour
     public Button resetButton;
     public Button touchModeButton;
     public Button spawnModeButton;
+    public Button chaseModeButton;
     public TextMeshProUGUI stateVisualizerText;
 
     [Header("Mode Button Visuals")]
@@ -66,9 +68,11 @@ public class UIManager : MonoBehaviour
         if (resetButton) resetButton.onClick.AddListener(HandleResetButton);
         if (touchModeButton) touchModeButton.onClick.AddListener(SetTouchMode);
         if (spawnModeButton) spawnModeButton.onClick.AddListener(SetSpawnMode);
+        if (chaseModeButton) spawnModeButton.onClick.AddListener(SetChaseMode);
 
         if (confirmYesButton) confirmYesButton.onClick.AddListener(HandleConfirmYes);
         if (confirmNoButton) confirmNoButton.onClick.AddListener(HandleConfirmNo);
+        
 
 
         // Initialize Mode and UI
@@ -131,6 +135,11 @@ public class UIManager : MonoBehaviour
         ApplyModeChange(InteractionMode.Spawn);
     }
 
+    public void SetChaseMode()
+    {
+        ApplyModeChange(InteractionMode.Chase);
+    }
+
     private void ApplyModeChange(InteractionMode newMode, bool closeMenuAfterChange = true)
     {
         if (CurrentMode == newMode && !closeMenuAfterChange)
@@ -156,7 +165,12 @@ public class UIManager : MonoBehaviour
     {
         if (stateVisualizerText != null)
         {
-            stateVisualizerText.text = CurrentMode == InteractionMode.Spawn ? "Spawn Objects Mode" : "Touch Mode";
+            stateVisualizerText.text = CurrentMode switch
+            {
+                InteractionMode.Spawn => "Spawn Objects Mode",
+                InteractionMode.Chase => "Chase Mode",
+                _ => "Touch Mode"
+            };
         }
 
         Image touchBtnImage = touchModeButton?.GetComponent<Image>();
@@ -170,7 +184,13 @@ public class UIManager : MonoBehaviour
         {
             spawnBtnImage.color = (CurrentMode == InteractionMode.Spawn) ? highlightedButtonColor : normalButtonColor;
         }
-    }
+
+        Image chaseBtnImage = chaseModeButton?.GetComponent<Image>();
+        if (chaseBtnImage)
+        {
+            chaseBtnImage.color = (CurrentMode == InteractionMode.Chase) ? highlightedButtonColor : normalButtonColor;
+        }
+    } 
 
     void HandleResetButton()
     {

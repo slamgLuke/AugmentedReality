@@ -7,6 +7,10 @@ public class ObjectSpawner : MonoBehaviour
     public Rigidbody[] projectilePrefabs = new Rigidbody[5];
     public Transform spawnablesTransform;
 
+    // Public static reference to the second object
+    public static Transform targetToChase;
+
+
     void Update()
     {
         if (UIManager.IsUIActive)

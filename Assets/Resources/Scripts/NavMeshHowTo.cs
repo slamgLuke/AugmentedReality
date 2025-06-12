@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine.XR.ARFoundation; // AR Foundation namespace
+using UnityEngine.XR.ARSubsystems;
+using System.Collections.Generic;
 
 /// SUMMARY:
 /// LightshipNavMeshSample
@@ -18,6 +21,12 @@ public class NavMeshHowTo : MonoBehaviour
     [SerializeField]
     private Transform spawnablesTransform;
 
+    [SerializeField]
+    private ARPlaneManager _arPlaneManager;
+
+    [SerializeField]
+    private float _spawnInterval;
+
     [Header("Player Settings")]
     [SerializeField, Range(0.1f, 20f)]
     private float followSpeed = 5f; // Velocidad de seguimiento del objeto físico.
@@ -29,11 +38,15 @@ public class NavMeshHowTo : MonoBehaviour
 
     private GameObject _agentInstance;
     private GameObject _playerInstance;
+    private GameObject _aiplayerInstance;
     private Rigidbody _playerRigidbody;
+    private Rigidbody _aiRigidBody;
     private Transform modelTransform; // Asigna aquí el transform del modelo hijo.
+    private float _timer;
 
 
     private bool isRagdoll = false;
+
 
     void Update()
     {
@@ -52,11 +65,67 @@ public class NavMeshHowTo : MonoBehaviour
             _agentInstance = null;
             _playerRigidbody = null;
             modelTransform = null;
+            _aiplayerInstance = null;
+            _aiRigidBody = null;
 
             Debug.Log("Player y Agent destruidos por caer debajo de -5 en Y.");
         }
+        if (_aiplayerInstance != null && _aiplayerInstance.transform.position.y <= -5f)
+        {
+            Destroy(_aiplayerInstance);
+            if (_aiplayerInstance != null)
+            {
+                Destroy(_aiplayerInstance.gameObject);
+            }
+        }
+        if (_aiplayerInstance == null)
+        {
+            _timer += Time.deltaTime;
+
+            if (_timer >= _spawnInterval)
+            {
+                TrySpawnAI();
+                _timer = 0f;
+            }
+        }
     }
 
+    private void TrySpawnAI()
+    {
+
+        List<ARPlane> planes = new List<ARPlane>();
+        foreach (var plane in _arPlaneManager.trackables)
+            planes.Add(plane);
+
+        if (planes.Count == 0)
+        {
+            Debug.Log("No AR planes detected yet.");
+            return;
+        }
+
+
+        ARPlane randomPlane = planes[Random.Range(0, planes.Count)];
+
+
+        Vector2 size = randomPlane.size;
+        Vector3 spawnPosition = randomPlane.center + new Vector3(
+            Random.Range(-size.x / 2f, size.x / 2f),
+            0,
+            Random.Range(-size.y / 2f, size.y / 2f)
+        );
+
+
+        _aiplayerInstance = Instantiate(
+            _playerPrefab,
+            spawnPosition + Vector3.up * 0.1f,
+            Quaternion.identity,
+            spawnablesTransform
+        );
+
+
+        if (!_aiplayerInstance.TryGetComponent(out _aiRigidBody))
+            _aiRigidBody = _aiplayerInstance.AddComponent<Rigidbody>();
+    }
     void FixedUpdate()
     {
         if (!isRagdoll)
@@ -73,7 +142,7 @@ public class NavMeshHowTo : MonoBehaviour
         {
             return;
         }
-        if (UIManager.CurrentMode != UIManager.InteractionMode.Touch)
+        if (UIManager.CurrentMode != UIManager.InteractionMode.Touch && UIManager.CurrentMode != UIManager.InteractionMode.Chase)
         {
             return;
         }
@@ -113,6 +182,9 @@ public class NavMeshHowTo : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 Debug.Log("HIT!!");
+
+
+
                 if (_agentInstance == null)
                 {
                     _agentInstance = Instantiate(_agentPrefab, spawnablesTransform.position, Quaternion.identity, spawnablesTransform);
@@ -120,7 +192,9 @@ public class NavMeshHowTo : MonoBehaviour
 
                     _playerInstance = Instantiate(_playerPrefab, spawnablesTransform.position, Quaternion.identity, spawnablesTransform);
                     _playerInstance.transform.position = hit.point + new Vector3(0, 0.1f, 0);
+                    _playerInstance.tag = "Player";
                     _playerRigidbody = _playerInstance.GetComponent<Rigidbody>();
+
 
                     modelTransform = _playerInstance.transform.GetChild(0); // Obtiene el primer hijo
 
@@ -160,6 +234,11 @@ public class NavMeshHowTo : MonoBehaviour
 
         if (_playerRigidbody == null)
             _playerRigidbody = _playerInstance.GetComponent<Rigidbody>();
+
+        if (UIManager.CurrentMode == UIManager.InteractionMode.Chase && ObjectSpawner.targetToChase != null)
+        {
+            _agentInstance.transform.position = _aiplayerInstance.transform.position;
+        }
 
         // Calcular la dirección hacia el agente sin cambiar la altura (Y)
         Vector3 direction = _agentInstance.transform.position - _playerInstance.transform.position;
