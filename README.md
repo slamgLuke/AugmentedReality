@@ -8,6 +8,10 @@
 - Project Template: 3D (Built-in Render Pipeline)
 
 
+## Instalación
+
+Revisar la pestaña de `Releases` para descargar el último APK.
+
 ## Scripts
 
 El siguiente documento describe el propósito de cada script.
