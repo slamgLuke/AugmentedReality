@@ -52,7 +52,7 @@ Los códigos se encuentran dentro de la carpeta `Assets/Resources/Scripts`, dent
 1. Clonar el Repositorio
 2. Abrir el repositorio en Unity (la primera vez instalará y compilará todas las dependencias, puede demorar)
 3. Para Buildear: `File > Build Profiles > Build`
-4. El archivo APK resultante se puede instalar en un dispositivo Android, siempre que no sea una versión muy antigua y cuente con soporte de Google ARCore.
+4. El archivo APK resultante se puede instalar en un dispositivo Android, siempre que sea 11.0 o superior y cuente con soporte de Google ARCore.
 
 En este último paso se pueden configurar opciones para permitir compatibilidad con más dispositivos, y entre otras cosas dentro de la pestaña `Player Settings`.
 
