@@ -45,9 +45,10 @@ Los códigos se encuentran dentro de la carpeta `Assets/Resources/Scripts`, dent
 ## Building
 (cómo buildear el proyecto)
 
-Pre-requisitos:
+### Pre-requisitos:
 - Unity 6000.0.44f1 con todos los módulos de Soporte Android 
 
+### Pasos
 1. Clonar el Repositorio
 2. Abrir el repositorio en Unity (la primera vez instalará y compilará todas las dependencias, puede demorar)
 3. Para Buildear: `File > Build Profiles > Build`
